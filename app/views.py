@@ -64,7 +64,19 @@ def index():
 @app.route('/classes')
 @login_required
 def classes():
-	return render_template("classes.html", title = "Classes")
+	courses = [
+		{
+		"name":"English 101",
+		"code":"123456",
+		"numStudents":4
+		},
+		{
+		"name":"Math 250",
+		"code":"7891011",
+		"numStudents":12
+		}
+	]
+	return render_template("classes.html", title = "Classes", courseList=courses)
 
 @app.route('/create-assignment')
 @login_required

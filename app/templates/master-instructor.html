@@ -12,6 +12,9 @@
 
     <!-- Bootstrap core CSS -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
+      
+    <!-- Custom CSS -->
+    <link href="static/css/style.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -58,7 +61,8 @@
 	</nav>
 
     <div class="container">
-    
+      <h1 class="pageTitle">{{title}}</h1>
+      
       {% block content %}{% endblock %}
 
       <hr>
@@ -72,5 +76,6 @@
     <!-- Bootstrap core JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
+    {% block script %}{% endblock %}
   </body>
 </html>
