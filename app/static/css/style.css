@@ -7,7 +7,7 @@
 /* Format Tables */
 .table {
     margin-top:40px;
-    margin-bottom:30px;
+    margin-bottom:40px;
 }
 
 /* Format table headings */
@@ -25,7 +25,9 @@
     text-align:center;
 }
 
-
+/*************************************
+ *        Instructor Pages
+ *************************************/
 /* Format view buttons */
 .btn-view {
     background-color:#FFF;
@@ -37,7 +39,7 @@
 #class_name, #class {
     margin-bottom:15px;
 }
-
+/* Forms */
 #form_holder {
     width:300px;
     margin-bottom:40px;
@@ -55,4 +57,45 @@
 /* New Assignment */
 #form_holder input {
     margin-bottom:15px;
+}
+
+/*************************************
+ *         Main Home Page
+ *************************************/
+#mainContent {
+    min-width:640px;
+}
+#firstLine {
+    height:320px;
+    margin-bottom:0px;
+}
+#mainImage, #tagLine {
+    display:inline-block;
+    text-align:center;
+}
+#spacer {
+    height:80px;
+}
+
+#tagText1, #tagText2 {
+    text-align:center;
+    margin:auto;
+    font-size:30px;
+}
+#tagButton {
+    text-align:center;
+    margin:auto;
+    margin-top:15px;
+}
+#thumbnails {
+    min-width:640px;
+}
+.thumbnail img {
+    margin-top:10px;
+}
+.caption {
+    text-align:center;
+}
+.thumbnail {
+    height:260px;
 }

@@ -1,53 +1,64 @@
 {% extends "master.html" %}
 {% block head %}{% endblock %}
 {% block content %}
-<!-- Main Demo Image -->
-<div id="mainImage"><img /></div>
-
-<!-- Tagline -->
-<div id="tagline">
-    Hassle-Free, Paper-Free Homework Tracker<br/>
-    <button type="button" class="btn btn-warning">Sign Up For Free!</button>
-</div>
-
-<!-- Thumbnails With Details -->
-
-<!-- Create -->
-<div class="row">
-  <div class="col-sm-6 col-md-4">
-    <div class="thumbnail">
-      <img data-src="holder.js/300x200" alt="...">
-      <div class="caption">
-        <h3>Create</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      </div>
+<div class="container-fluid" id="mainContent">
+    <div class="row" id="firstLine">
+        <!-- Main Demo Image -->
+        <div id="mainImage" class="col-xs-4">
+            <img height=300 src="../static/images/main.png"/>
+        </div>
+        <!-- Tagline -->
+        <div id="tagline" class="col-xs-8">
+            <div id="spacer"></div>
+            <div id="tagText1">Hassle-Free, Paper-Free</div>
+            <div id="tagText2">Homework Tracker</div>
+            <div id="tagButton">
+                <button type="button" onclick="signup();" class="btn btn-warning btn-lg">Sign Up For Free!</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-
-<!-- Assign -->
-<div class="row">
-  <div class="col-sm-6 col-md-4">
-    <div class="thumbnail">
-      <img data-src="holder.js/300x200" alt="...">
-      <div class="caption">
-        <h3>Assign</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      </div>
+    <div id="thumbnails" class="row">
+    <!-- Thumbnails With Details -->
+        <!-- Create -->
+          <!-- <div class="col-sm-6 col-md-4"> -->
+          <div class="col-xs-4">
+            <div class="thumbnail">
+              <img width=75 src="../static/images/create.png" alt="Create">
+              <div class="caption">
+                <h3>Create</h3>
+                <p>Create assignments easily with a clean and simple user interface.</p>
+              </div>
+            </div>
+          </div>
+        <!-- Assign -->
+          <!-- <div class="col-sm-6 col-md-4"> -->
+          <div class="col-xs-4">
+            <div class="thumbnail">
+              <img width=75 src="../static/images/assign.png" alt="Assign">
+              <div class="caption">
+                <h3>Assign</h3>
+                <p>Select a due date and assign homework to any of your classes.</p>
+              </div>
+            </div>
+          </div>
+        <!-- Track -->
+          <!-- <div class="col-sm-6 col-md-4"> -->
+          <div class="col-xs-4">
+            <div class="thumbnail">
+              <img width=75 src="../static/images/track.png" alt="Track">
+              <div class="caption">
+                <h3>Track</h3>
+                <p>Color-coded tables help you keep track of your students' progress and view their submissions.</p>
+              </div>
+            </div>
+          </div>
     </div>
-  </div>
 </div>
-
-<!-- Track -->
-<div class="row">
-  <div class="col-sm-6 col-md-4">
-    <div class="thumbnail">
-      <img data-src="holder.js/300x200" alt="...">
-      <div class="caption">
-        <h3>Track</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      </div>
-    </div>
-  </div>
-</div>
+{% endblock %}
+{% block script %}
+    <script>
+        function signup() {
+            window.location.href = "/home";
+        }
+    </script>
 {% endblock %}

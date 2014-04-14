@@ -59,7 +59,7 @@ def logout():
 @app.route('/index')
 @login_required
 def index():
-	return render_template("home.html", title = "Home")
+	return render_template("current-assignments.html", title = "Home")
 	
 @app.route('/classes')
 @login_required
@@ -97,7 +97,8 @@ def create_assignment():
 @login_required
 def create_class():
 	return render_template("create-class.html", title = "Create Class")
-	
+
+@app.route('/home')
 @app.route('/current-assignments')
 @login_required
 def current_assignment():
@@ -139,6 +140,7 @@ def home_not_logged_in():
 @login_required
 def home_student():
 	return render_template("home-student.html", title = "Home")
+
 
 @app.route('/past-assignments')
 @login_required
