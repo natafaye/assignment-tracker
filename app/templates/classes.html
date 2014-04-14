@@ -30,10 +30,13 @@
 {% block script %}
   <script>
     function new_class() {
-      window.alert("Request to visit create class page");
+      //window.alert("Request to visit create class page");
+      window.location.href = "/create-class";
     }
     function view_students(code) {
       window.alert("Request to see students for class code: " + code);
+      // Display the button as normal again
+      $('.btn-view').blur(); 
     }
   </script>
 {% endblock %}

@@ -44,9 +44,9 @@
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav">
-			<li class="active"><a href="#">Current Assignments</a></li>
-			<li><a href="#">Previous Assignments</a></li>
-			<li><a href="#">Classes</a></li>
+			<li><a href="/current-assignments">Current Assignments</a></li>
+			<li><a href="/past-assignments">Past Assignments</a></li>
+			<li><a href="/classes">Classes</a></li>
 		  </ul>
 		  <ul class="nav navbar-nav navbar-right">
 			<li class="dropdown">
@@ -76,6 +76,15 @@
     <!-- Bootstrap core JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
+    <script>
+	// Determine the current page
+	var url = window.location.href.split("/");
+	var curPage = url[url.length-1];
+	
+	// Highlight the current page on the nav-bar
+	var anchorSelect = ".nav li a[href='/" + curPage + "']";
+	$(anchorSelect).parent("li").addClass("active");
+      </script>
     {% block script %}{% endblock %}
   </body>
 </html>

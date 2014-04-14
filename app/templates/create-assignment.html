@@ -1,27 +1,70 @@
 {% extends "master-instructor.html" %}
 {% block head %}{% endblock %}
 {% block content %}
-<div id="formHolder">
-    <form name="info">
+<div id="form_holder">
+    <form name="info" onsubmit="return create_assignment();">
         <!-- Class Selection Dropdown -->
-        <span class="label">Class:</span>
-        <input type="text" class="form-control" placeholder="Name"><br/>
+        <select class="form-control" id="class">
+            <option default>Select a class...</option>
+            {% for course in courseList%}
+            <option value="{{course.code}}"> {{course.name}} </option>
+            {% endfor %}
+        </select>
         
         <!-- Assignment Name -->
-        <span class="label">Title:</span>
-        <input type="text" class="form-control" placeholder="Assignment Name"><br/>
+        <input type="text" class="form-control" id="assign_name" placeholder="Assignment Name">
           
         <!-- Due Date -->
-        <span class="label">Due:</span>
-        <input type="date" class="form-control" id="datepicker"><br/>
+        <span class="form_label">Due Date:</span>
+        <input type="date" class="form-control" id="datepicker" min="2014-04-14"/>
 
         <!-- Description -->
-        <span class="label">Description:</span><br/>
-        <textarea rows="5" cols="50">Description of assignment
-        </textarea><br/>
-    
+        <span class="form_label">Description:</span>
+        <textarea id="assign_desc" rows="5" cols="39"></textarea>
+
         <!-- Create Button -->    
         <button type="submit" class="btn btn-success">Create</button>                
     </form>
 </div>
+{% endblock %}
+{% block script %}
+  <script>
+    // Set minimum Due date as current date
+    var d = new Date();
+    var month = d.getMonth()+1;
+    var day = d.getDate();
+    if (day < 10) {
+        day = "0" + day;
+    }
+    if (month < 10) {
+        month = "0" + month;
+    }
+    document.getElementById("datepicker").min = d.getFullYear() + "-" + month + "-" + day;
+    
+    // Create assignment based on form data
+    function create_assignment() {
+        // Validate form fields
+        if (document.getElementById("class").value == "Select a class...") {
+            window.alert("Please select a class.");
+            return false;
+        }
+        if (document.getElementById("assign_name").value == "") {
+            window.alert("Please enter a name for the assignment.");
+            return false;
+        }
+        if (document.getElementById("datepicker").value == "") {
+            window.alert("Please select a due date.");
+            return false;
+        }
+        if (document.getElementById("assign_desc").value == "") {
+            window.alert("Please enter a description for this assignment.");
+            return false;
+        }
+        window.alert("Creating new assignment...\nClass code: " + document.getElementById("class").value +
+                     "\nAssignment Name: " + document.getElementById("assign_name").value +
+                     "\nDue Date: " + document.getElementById("datepicker").value +
+                     "\nDescription: " + document.getElementById("assign_desc").value);
+        return true;
+    }
+  </script>
 {% endblock %}

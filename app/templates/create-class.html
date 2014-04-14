@@ -1,14 +1,30 @@
 {% extends "master-instructor.html" %}
 {% block head %}{% endblock %}
 {% block content %}
-<div id="formHolder">
-    <form name="info">
-        <!-- Class Selection Dropdown -->
-        <span class="label">Title:</span>
-        <input type="text" class="form-control" placeholder="Class Name"><br/>
+<div id="form_holder">
+    <form name="info" onsubmit="return create_class();">
+        <!-- New Class Name -->
+        <!-- <span id="class_label">Name:</span> -->
+        <input type="text" class="form-control" id="class_name" placeholder="Class Name"><br/>
      
         <!-- Create Button -->    
         <button type="submit" class="btn btn-success">Create</button>                
     </form>
 </div>
+{% endblock %}
+{% block script %}
+  <script>
+    function create_class() {
+      // Validate class name? Confirmation window?
+      var className = document.getElementById("class_name").value;
+      if (className == "") {
+        window.alert("Please enter a name for the class.");
+        return false;
+      }
+      else {
+        window.alert("Creating new class: '" + document.getElementById("class_name").value + "'");
+        return true;
+      }
+    }
+  </script>
 {% endblock %}

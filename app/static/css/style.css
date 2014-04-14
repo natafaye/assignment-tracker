@@ -32,3 +32,27 @@
     color:#000;
     border: 1px solid #000;
 }
+
+/* Create New Class*/
+#class_name, #class {
+    margin-bottom:15px;
+}
+
+#form_holder {
+    width:300px;
+    margin-bottom:40px;
+}
+.form_label {
+    margin-top:30px;
+    display:block;
+    font-weight:bold;
+}
+#assign_desc {
+    display:block;
+    margin-bottom: 20px;
+}
+
+/* New Assignment */
+#form_holder input {
+    margin-bottom:15px;
+}

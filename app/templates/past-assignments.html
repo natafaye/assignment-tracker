@@ -2,24 +2,50 @@
 {% block head %}{% endblock %}
 {% block content %}
 <!-- Button to Create New Assignment -->
-<button type="button" class="btn btn-default">+ New Assignment</button>
+<button type="button" class="btn btn-success" onclick="new_assignment()">+ New Assignment</button>
 
 <!-- Table of Past Assignments -->
-<table class="table">
+<table class="table table-striped table-condensed">
   <thead>
       <tr>
           <th>Class</th>
-          <th>Assignment</th>
-          <th>% of Class</th>
-          <th>Submissions</th>
-      </tr>
-      <tr>
-          <td>English</td>
-          <td>Journal Entry Week 4</td>
-          <td>Monday</td>
-          <td>79%</td>
-          <td><button type="button" class="btn btn-default">View</button></td>
+          <th class="center">Assignment</th>
+          <th class="center">Due</th>
+          <th class="center">% of Class</th>
+          <th class="center">Submissions</th>
       </tr>
   </thead>
+  <tbody>
+    {% for assignment in assignments %}
+      <!-- Highlight rows based on submission percentage -->
+      <tr {% if(assignment.percentSubmitted <= 75): %} class="danger"
+          {% elif(assignment.percentSubmitted < 100): %} class="warning"
+          {% else: %} class="success"
+          {% endif %} >
+        <td>{{assignment.class}}</td>
+          <td>{{assignment.name}}</td>
+          <td class="center">{{assignment.dueDate}}</td>
+          <td class="center">{{assignment.percentSubmitted}}</td>
+          <td class="center">
+          {% if(assignment.percentSubmitted > 0): %}
+          <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submissions('{{assignment.name}}')">View</button></td>
+          {% else: %}
+            ---
+          {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
+{% endblock %}
+{% block script %}
+  <script>
+    function view_submissions(assign_name) {
+      window.alert("Request to view submissions for: " + assign_name);
+      // Display the button as normal again
+      $('.btn-view').blur(); 
+    }
+    function new_assignment() {
+      window.location.href = "/create-assignment";
+    }
+  </script>
 {% endblock %}

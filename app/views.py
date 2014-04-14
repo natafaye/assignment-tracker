@@ -81,7 +81,17 @@ def classes():
 @app.route('/create-assignment')
 @login_required
 def create_assignment():
-	return render_template("create-assignment.html", title = "Create Assignment")
+	courses = [
+		{
+		"name":"English 101",
+		"code":"123456"
+		},
+		{
+		"name":"Math 250",
+		"code":"7891011"
+		}
+	]
+	return render_template("create-assignment.html", title = "Create Assignment", courseList=courses)
 
 @app.route('/create-class')
 @login_required
@@ -91,7 +101,35 @@ def create_class():
 @app.route('/current-assignments')
 @login_required
 def current_assignment():
-	return render_template("current-assignments.html", title = "Current Assignments")
+	assignments = [
+		{
+		"name":"Journal Entry Week 4",
+		"dueDate":"2014-04-20",
+		"class":"English 101",
+		"percentSubmitted":50
+		},
+		{
+		"name":"Homework 10",
+		"dueDate":"2014-04-20",
+		"class":"Math 250",
+		"percentSubmitted":100
+		},
+		{
+		"name":"Homework 11",
+		"dueDate":"2014-04-25",
+		"class":"Math 250",
+		"percentSubmitted":75
+		},
+		{
+		"name":"Homework 12",
+		"dueDate":"2014-04-30",
+		"class":"Math 250",
+		"percentSubmitted":0
+		}
+	]
+	# Sort assignments by due date
+	assignments.sort(key=lambda assignment:assignment["dueDate"]);
+	return render_template("current-assignments.html", title = "Current Assignments", assignments=assignments)
 
 @app.route('/home-not-logged-in')
 def home_not_logged_in():
@@ -105,7 +143,41 @@ def home_student():
 @app.route('/past-assignments')
 @login_required
 def past_assignments():
-	return render_template("past-assignments.html", title = "Past Assignments")
+	assignments = [
+		{
+		"name":"Journal Entry Week 1",
+		"dueDate":"2014-04-10",
+		"class":"English 101",
+		"percentSubmitted":100
+		},
+		{
+		"name":"Homework 6",
+		"dueDate":"2014-04-11",
+		"class":"Math 250",
+		"percentSubmitted":75
+		},
+		{
+		"name":"Homework 7",
+		"dueDate":"2014-04-12",
+		"class":"Math 250",
+		"percentSubmitted":100
+		},
+		{
+		"name":"Homework 8",
+		"dueDate":"2014-04-13",
+		"class":"Math 250",
+		"percentSubmitted":95
+		},
+		{
+		"name":"Journal Entry Week 0",
+		"dueDate":"2014-04-05",
+		"class":"English 101",
+		"percentSubmitted":0
+		}
+	]
+	# Sort assignments by due date
+	assignments.sort(key=lambda assignment:assignment["dueDate"]);
+	return render_template("past-assignments.html", title = "Past Assignments",assignments=assignments)
 
 @app.route('/student-signup')
 def student_signup():
