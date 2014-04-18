@@ -4,23 +4,24 @@
 <div class="center">
     <h1 class="pageTitle">{{title}}</h1>
     <div id="form_holder" class="m_auto space_above">
-        <form name="info" onsubmit="return student_signup();">
-            <input type="text" id="student_name" class="form-control" placeholder="Name">
+        <form name="info" onsubmit="return instructor_signup();">
+            <input type="text" id="instructor_name" class="form-control" placeholder="Name">
             <input type="email" id="email" class="form-control" placeholder="Email Address">
             <input type="text" id="openID" class="form-control" placeholder="OpenID" title="Enter your openID URL here">
-            <input type="text" id="class_code" class="form-control" placeholder="Class Code">
-            <button type="submit" class="btn btn-success">Create Account!</button>
+            <button type="submit" class="btn btn-success">Create Account!</button><br/><br/>
+            <a id="not_instructor" href="/student-signup" title="Click here for the student signup page">Not an Instructor?</a>
         </form>
     </div>
+
 </div>
 {% endblock %}
 {% block script %}
   <script>
     // Submit Data to create a student account
-    function student_signup() {
+    function instructor_signup() {
         
         // Validate form fields
-        if (document.getElementById("student_name").value == "") {
+        if (document.getElementById("instructor_name").value == "") {
             window.alert("Please enter your name.");
             return false;
         }
@@ -32,15 +33,9 @@
             window.alert("Please enter your openID URL.");
             return false;
         }
-        if (document.getElementById("class_code").value == "") {
-            // Perform some kind of check here to make sure the class code is valid
-            window.alert("Please enter a class code.");
-            return false;
-        }
-        window.alert("Creating new student...\nName: " + document.getElementById("student_name").value +
+        window.alert("Creating new instructor...\nName: " + document.getElementById("instructor_name").value +
                      "\nEmail: " + document.getElementById("email").value +
-                     "\nOpenID: " + document.getElementById("openID").value +
-                     "\nClass Code: " + document.getElementById("class_code").value);
+                     "\nOpenID: " + document.getElementById("openID").value);
         return true;
     }
   </script>

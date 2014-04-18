@@ -57,9 +57,10 @@ def logout():
 
 @app.route('/')
 @app.route('/index')
-@login_required
+@app.route('/home')
+@app.route('/home-not-logged-in')
 def index():
-	return render_template("current-assignments.html", title = "Home")
+	return render_template("home-not-logged-in.html", title = "Assignment Tracker")
 	
 @app.route('/classes')
 @login_required
@@ -98,7 +99,6 @@ def create_assignment():
 def create_class():
 	return render_template("create-class.html", title = "Create Class")
 
-@app.route('/home')
 @app.route('/current-assignments')
 @login_required
 def current_assignment():
@@ -132,15 +132,34 @@ def current_assignment():
 	assignments.sort(key=lambda assignment:assignment["dueDate"]);
 	return render_template("current-assignments.html", title = "Current Assignments", assignments=assignments)
 
-@app.route('/home-not-logged-in')
-def home_not_logged_in():
-	return render_template("home-not-logged-in.html", title = "Sign Up")
-
 @app.route('/home-student')
 @login_required
 def home_student():
-	return render_template("home-student.html", title = "Home")
+	course = {
+		"name":"English 101",
+		"assignments": [
+			{
+			"name":"Journal Entry Week 4",
+			"dueDate":"2014-04-20",
+			"submitted":"2014-04-19"
+			},
+			{
+			"name":"Journal Entry Week 5",
+			"dueDate":"2014-04-24",
+			"submitted":""
+			},
+			{
+			"name":"Creative Writing Essay 1",
+			"dueDate":"2014-04-30",
+			"submitted":""
+			}
+		]
+	}
+	return render_template("home-student.html", title = course["name"],course=course)
 
+@app.route('/instructor-signup')
+def instructor_signup():
+	return render_template("instructor-signup.html", title = "Instructor Signup")
 
 @app.route('/past-assignments')
 @login_required
@@ -183,14 +202,60 @@ def past_assignments():
 
 @app.route('/student-signup')
 def student_signup():
-	return render_template("student-signup.html", title = "Sign Up")
+	return render_template("student-signup.html", title = "Student Signup")
 	
 @app.route('/submissions')
 @login_required
 def submissions():
-	return render_template("submissions.html", title = "Submissions")
+	assignment = {
+		"name":"Journal Entry Week 4",
+		"description": "Write down your thoughts and feelings about the Little Red Riding Hood. Also, explain why it was unwise for Red to wander alone in the forest.",
+		"dueDate":"2014-04-25"
+	}
+	students = [
+		{
+		"firstname":"Alice",
+		"lastname":"Brown",
+		"id":1,
+		"date":"2014-04-20"
+		},
+		{
+		"firstname":"John",
+		"lastname":"Smith",
+		"id":2,
+		"date":""
+		},
+		{
+		"firstname":"Victor",
+		"lastname":"Hugo",
+		"id":3,
+		"date":"2014-04-22"
+		},
+		{
+		"firstname":"Arianne",
+		"lastname":"Henderson",
+		"id":4,
+		"date":""
+		}
+	]
+	submissions = 0
+	for student in students:
+		if(student["date"] != ""):
+			submissions = submissions + 1
+	percent = 100 * submissions / len(students)
+	
+	# Sort students by last name
+	students.sort(key=lambda student:student["lastname"]);
+	
+	fulltitle = assignment["name"]
+	return render_template("submissions.html", title=fulltitle, students=students, assignment=assignment,percent=percent)
 
 @app.route('/submit-assignment')
 @login_required
 def submit_assignment():
-	return render_template("submit-assignment.html", title = "Submit Assignment")
+	assignment = {
+		"name":"Journal Entry Week 4",
+		"description": "Write down your thoughts and feelings about the Little Red Riding Hood. Also, explain why it was unwise for Red to wander alone in the forest.",
+		"dueDate":"2014-04-25"
+	}
+	return render_template("submit-assignment.html", title = assignment["name"],assignment=assignment)

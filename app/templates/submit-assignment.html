@@ -1,18 +1,55 @@
-{% extends "master.html" %}
+{% extends "master-student.html" %}
 {% block head %}{% endblock %}
 {% block content %}
-<div id="formHolder">
-    <form name="info">
+<div id="form_holder">
+    <form name="info" onsubmit="return submit_assignment();">
+        <!-- Due date -->
+        <span id="due_label">Due: </span>
+        <div id="due">{{assignment.dueDate}}</div>
+        
         <!-- Assignment Instructions -->
-        <span class="instructions">Instructions:</span>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Here are the instructions for completing the assignment...</div><br/>
+        <span id="instruction_label">Instructions:</span>
+        <div id="instructions">{{assignment.description}}</div>
             
         <!-- Assignment Content -->
-        <textarea rows="10" cols="50">Content of Assignment here...
-        </textarea><br/>
+        <textarea rows="10" cols="50" id="response" class="grayed">Type response here...</textarea>
         
         <!-- Submit Button -->    
         <button type="submit" class="btn btn-success">Submit</button>
     </form>
 </div>
+{% endblock %}
+{% block script %}
+    <script>
+        // Toggle instructional text in response textarea
+        $("#response").focus(function(){
+            var curText = document.getElementById("response").value;
+            if( curText == "Type response here...")
+            {
+                document.getElementById("response").value = "";
+                $("#response").removeClass("grayed");
+            }
+        });
+        // Toggle instructional text in response textarea
+        $("#response").blur(function(){
+            var curText = document.getElementById("response").value;
+            if( curText == "")
+            {
+                document.getElementById("response").value = "Type response here...";
+                $("#response").addClass("grayed");
+            }
+        });
+
+        // Validate response
+        function submit_assignment() {
+            var text = document.getElementById("response").value;
+            if (text == "Type response here...") {
+                window.alert("Please type a response.");
+                return false;
+            }
+            
+            window.alert("Submitting response:\n" + text);
+            return true;
+        }
+    </script>
 {% endblock %}

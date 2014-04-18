@@ -38,7 +38,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		  </button>
-		  <a class="navbar-brand" href="#">Assignment Tracker</a>
+		  <a class="navbar-brand" href="/home">Assignment Tracker</a>
 		</div>
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
@@ -52,7 +52,7 @@
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown">John Doe <b class="caret"></b></a>
 			  <ul class="dropdown-menu">
-				<li><a href="#">Sign Out</a></li>
+				<li><a href="/logout">Sign Out</a></li>
 			  </ul>
 			</li>
 		  </ul>
@@ -80,6 +80,29 @@
 	// Determine the current page
 	var url = window.location.href.split("/");
 	var curPage = url[url.length-1];
+	var URL = window.location.href;
+	
+	// For an instructor's first-time login, update URL to show current-assignments
+	if (curPage == "#") {
+	  URL = URL.replace("#","current-assignments");
+	  window.location.href = URL;
+	  curPage = "current-assignments";
+	}
+	else if (curPage == "") {
+	  URL = URL + "current-assignments";
+	  window.location.href = URL;
+	  curPage = "current-assignments";
+	}
+	else if (curPage == "home") {
+	  URL = URL.replace("home","current-assignments");
+	  window.location.href = URL;
+	  curPage = "current-assignments";
+	}
+	else if (curPage == "index") {
+	  URL = URL.replace("index","current-assignments");
+	  window.location.href = URL;
+	  curPage = "current-assignments";
+	}
 	
 	// Highlight the current page on the nav-bar
 	var anchorSelect = ".nav li a[href='/" + curPage + "']";

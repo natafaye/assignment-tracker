@@ -18,9 +18,9 @@
         <span class="form_label">Due Date:</span>
         <input type="date" class="form-control" id="datepicker" min="2014-04-14"/>
 
-        <!-- Description -->
-        <span class="form_label">Description:</span>
-        <textarea id="assign_desc" rows="5" cols="39"></textarea>
+        <!-- Instructions -->
+        <span class="form_label">Instructions:</span>
+        <textarea id="assign_instr" rows="5" cols="39"></textarea>
 
         <!-- Create Button -->    
         <button type="submit" class="btn btn-success">Create</button>                
@@ -56,14 +56,14 @@
             window.alert("Please select a due date.");
             return false;
         }
-        if (document.getElementById("assign_desc").value == "") {
+        if (document.getElementById("assign_instr").value == "") {
             window.alert("Please enter a description for this assignment.");
             return false;
         }
         window.alert("Creating new assignment...\nClass code: " + document.getElementById("class").value +
                      "\nAssignment Name: " + document.getElementById("assign_name").value +
                      "\nDue Date: " + document.getElementById("datepicker").value +
-                     "\nDescription: " + document.getElementById("assign_desc").value);
+                     "\nDescription: " + document.getElementById("assign_instr").value);
         return true;
     }
   </script>
