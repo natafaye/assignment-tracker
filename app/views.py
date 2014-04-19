@@ -2,9 +2,136 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
 from forms import LoginForm
-from models import User, ROLE_STUDENT, ROLE_INSTRUCTOR
+from models import User, Assignment, Submission, ROLE_STUDENT, ROLE_INSTRUCTOR
 
-############## Login ##############
+############### Home and Unauthenticated Pages ##############
+
+@app.route('/')
+@app.route('/index')
+@app.route('/home')
+def index():
+	if not g.user.is_authenticated():
+		return home_not_logged_in()
+	elif g.user.role == ROLE_INSTRUCTOR:
+		return current_assignments()
+	else: # g.user.role == ROLE_STUDENT
+		return home_student()
+
+@app.route('/home-not-logged-in')
+def home_not_logged_in():
+	return render_template("home-not-logged-in.html", title = "Sign Up")
+	
+@app.route('/student-signup')
+def student_signup():
+	return render_template("student-signup.html", title = "Sign Up")
+	
+@app.route('/instructor-signup')
+def instructor_signup():
+	return render_template("instructor-signup.html", title = "Instructor Signup")
+
+
+##################### Instructor Pages ######################
+
+@app.route('/current-assignments')
+@login_required
+def current_assignments():
+	# Redirect student to student homepage
+	if not g.user.role == ROLE_INSTRUCTOR:
+		return redirect(url_for('index'))
+		
+	assignments = get_assignments_for_instructor()
+	# Sort assignments by due date
+	assignments.sort(key=lambda assignment:assignment["dueDate"]);
+	
+	return render_template("current-assignments.html", title = "Current Assignments", user=g.user, assignments=assignments)
+	
+@app.route('/past-assignments')
+@login_required
+def past_assignments():
+	# Redirect student to student homepage
+	if not g.user.role == ROLE_INSTRUCTOR:
+		return redirect(url_for('index'))
+		
+	assignments = get_assignments_for_instructor()
+	# Sort assignments by due date
+	assignments.sort(key=lambda assignment:assignment["dueDate"]);
+	
+	return render_template("past-assignments.html", title = "Past Assignments", user=g.user, assignments=assignments)
+	
+@app.route('/classes')
+@login_required
+def classes():
+	# Redirect student to student homepage
+	if not g.user.role == ROLE_INSTRUCTOR:
+		return redirect(url_for('index'))
+		
+	courses = get_courses_for_instructor()
+	
+	return render_template("classes.html", title = "Classes", user=g.user, courseList=courses)
+	
+@app.route('/submissions/<assignment_id>')
+@login_required
+def submissions(assignment_id):
+	# Redirect student to student homepage
+	if not g.user.role == ROLE_INSTRUCTOR:
+		return redirect(url_for('index'))
+	
+	assignment = get_assignment(assignment_id)
+	print(assignment)
+	# Sort students by last name
+	assignment["students"].sort(key=lambda student:student["lastname"]);
+	
+	return render_template("submissions.html", title = assignment["name"], user=g.user, assignment=assignment)
+
+@app.route('/create-assignment')
+@login_required
+def create_assignment():
+	# Redirect student to student homepage
+	if not g.user.role == ROLE_INSTRUCTOR:
+		return redirect(url_for('index'))
+		
+	courses = get_courses_for_instructor()
+	
+	return render_template("create-assignment.html", title = "Create Assignment", user=g.user, courseList=courses)
+
+@app.route('/create-class')
+@login_required
+def create_class():
+	# Redirect student to student homepage
+	if not g.user.role == ROLE_INSTRUCTOR:
+		return redirect(url_for('index'))
+	
+	return render_template("create-class.html", title = "Create Class", user=g.user)
+
+
+####################### Student Pages #######################
+
+@app.route('/home-student')
+@login_required
+def home_student():
+	if not g.user.role == ROLE_STUDENT:
+		return redirect(url_for('index'))
+		
+	course = get_course_for_student()
+	
+	return render_template("home-student.html", title = course["name"], user=g.user, course=course)
+
+@app.route('/submit-assignment/<assignment_id>')
+@login_required
+def submit_assignment(assignment_id):
+	if not g.user.role == ROLE_STUDENT:
+		return redirect(url_for('index'))
+		
+	assignment = {
+		"name":"Journal Entry Week 4",
+		"description": "Write down your thoughts and feelings about the Little Red Riding Hood. Also, explain why it was unwise for Red to wander alone in the forest.",
+		"dueDate":"2014-04-25"
+	}
+	
+	return render_template("submit-assignment.html", title = assignment["name"], user=g.user, assignment=assignment)
+
+
+######################## Login ########################
 
 @app.before_request
 def before_request():
@@ -52,210 +179,113 @@ def after_login(resp):
 def logout():
 	logout_user()
 	return redirect(url_for('index'))
+
+################## Database Functions #################
+		
+def get_courses_for_instructor():
+	# Check permissions
+	if not g.user.is_authenticated():
+		return courses
+		
+	courses = []
+	for c in g.user.courses:
+		courses.append({
+				"name":c.title,
+				"code":c.code,
+				"numStudents":len(c.students)
+			})
+			
+	return courses
 	
-############## Other Pages ##############
-
-@app.route('/')
-@app.route('/index')
-@app.route('/home')
-@app.route('/home-not-logged-in')
-def index():
-	return render_template("home-not-logged-in.html", title = "Assignment Tracker")
-	
-@app.route('/classes')
-@login_required
-def classes():
-	courses = [
-		{
-		"name":"English 101",
-		"code":"123456",
-		"numStudents":4
-		},
-		{
-		"name":"Math 250",
-		"code":"7891011",
-		"numStudents":12
-		}
-	]
-	return render_template("classes.html", title = "Classes", courseList=courses)
-
-@app.route('/create-assignment')
-@login_required
-def create_assignment():
-	courses = [
-		{
-		"name":"English 101",
-		"code":"123456"
-		},
-		{
-		"name":"Math 250",
-		"code":"7891011"
-		}
-	]
-	return render_template("create-assignment.html", title = "Create Assignment", courseList=courses)
-
-@app.route('/create-class')
-@login_required
-def create_class():
-	return render_template("create-class.html", title = "Create Class")
-
-@app.route('/current-assignments')
-@login_required
-def current_assignment():
-	assignments = [
-		{
-		"name":"Journal Entry Week 4",
-		"dueDate":"2014-04-20",
-		"class":"English 101",
-		"percentSubmitted":50
-		},
-		{
-		"name":"Homework 10",
-		"dueDate":"2014-04-20",
-		"class":"Math 250",
-		"percentSubmitted":100
-		},
-		{
-		"name":"Homework 11",
-		"dueDate":"2014-04-25",
-		"class":"Math 250",
-		"percentSubmitted":75
-		},
-		{
-		"name":"Homework 12",
-		"dueDate":"2014-04-30",
-		"class":"Math 250",
-		"percentSubmitted":0
-		}
-	]
-	# Sort assignments by due date
-	assignments.sort(key=lambda assignment:assignment["dueDate"]);
-	return render_template("current-assignments.html", title = "Current Assignments", assignments=assignments)
-
-@app.route('/home-student')
-@login_required
-def home_student():
+def get_course_for_student():
+	# Check permissions
+	if g.user.course is None:
+		return {"name":"None", "assignments": []}
+		
 	course = {
-		"name":"English 101",
-		"assignments": [
-			{
-			"name":"Journal Entry Week 4",
-			"dueDate":"2014-04-20",
-			"submitted":"2014-04-19"
-			},
-			{
-			"name":"Journal Entry Week 5",
-			"dueDate":"2014-04-24",
-			"submitted":""
-			},
-			{
-			"name":"Creative Writing Essay 1",
-			"dueDate":"2014-04-30",
-			"submitted":""
-			}
-		]
+		"name": g.user.course.title,
+		"assignments": []
 	}
-	return render_template("home-student.html", title = course["name"],course=course)
-
-@app.route('/instructor-signup')
-def instructor_signup():
-	return render_template("instructor-signup.html", title = "Instructor Signup")
-
-@app.route('/past-assignments')
-@login_required
-def past_assignments():
-	assignments = [
-		{
-		"name":"Journal Entry Week 1",
-		"dueDate":"2014-04-10",
-		"class":"English 101",
-		"percentSubmitted":100
-		},
-		{
-		"name":"Homework 6",
-		"dueDate":"2014-04-11",
-		"class":"Math 250",
-		"percentSubmitted":75
-		},
-		{
-		"name":"Homework 7",
-		"dueDate":"2014-04-12",
-		"class":"Math 250",
-		"percentSubmitted":100
-		},
-		{
-		"name":"Homework 8",
-		"dueDate":"2014-04-13",
-		"class":"Math 250",
-		"percentSubmitted":95
-		},
-		{
-		"name":"Journal Entry Week 0",
-		"dueDate":"2014-04-05",
-		"class":"English 101",
-		"percentSubmitted":0
-		}
-	]
-	# Sort assignments by due date
-	assignments.sort(key=lambda assignment:assignment["dueDate"]);
-	return render_template("past-assignments.html", title = "Past Assignments",assignments=assignments)
-
-@app.route('/student-signup')
-def student_signup():
-	return render_template("student-signup.html", title = "Student Signup")
+	for a in g.user.course.assignments:
+		course.assignments.append({
+			"name": a.title,
+			"dueDate": a.due_date,
+			"submitted": get_date_submitted(a, g.user)
+		})
+		
+	return course
+		
+def get_assignments_for_instructor():
+	# Check permissions
+	if not g.user.is_authenticated():
+		return []
+		
+	assignments = []
+	for c in g.user.courses:
+		for a in c.assignments:
+			assignments.append({
+				'name':a.title,
+				'dueDate':a.due_date,
+				'class':c.title,
+				'percentSubmitted': get_percentage(a)
+			})
 	
-@app.route('/submissions')
-@login_required
-def submissions():
+	return assignments
+	
+def get_assignments_for_student():
+	# Check permissions
+	if not g.user.is_authenticated() or g.user.course is None:
+		return []
+		
+	assignments = []
+	for a in g.user.course.assignments:
+		assignments.append({
+				'name':a.title,
+				'description':a.description,
+				'dueDate':a.due_date
+		})
+		
+	return assignments
+	
+def get_assignment(assignment_id):
+	a = Assignment.query.get(assignment_id)
+	
+	# Check permissions
+	if a is None or (a.course.instructor != g.user and not g.user in a.course.students):
+		return {"name":"", "description":"", "dueDate":""}
+		
 	assignment = {
-		"name":"Journal Entry Week 4",
-		"description": "Write down your thoughts and feelings about the Little Red Riding Hood. Also, explain why it was unwise for Red to wander alone in the forest.",
-		"dueDate":"2014-04-25"
+		"name": a.title,
+		"description": a.description,
+		"dueDate": a.due_date,
+		"students": [],
+		"percent": get_percentage(a)
 	}
-	students = [
-		{
-		"firstname":"Alice",
-		"lastname":"Brown",
-		"id":1,
-		"date":"2014-04-20"
-		},
-		{
-		"firstname":"John",
-		"lastname":"Smith",
-		"id":2,
-		"date":""
-		},
-		{
-		"firstname":"Victor",
-		"lastname":"Hugo",
-		"id":3,
-		"date":"2014-04-22"
-		},
-		{
-		"firstname":"Arianne",
-		"lastname":"Henderson",
-		"id":4,
-		"date":""
-		}
-	]
-	submissions = 0
-	for student in students:
-		if(student["date"] != ""):
-			submissions = submissions + 1
-	percent = 100 * submissions / len(students)
+	for s in a.course.students:
+		assignment['students'].append({
+			"firstname": s.nickname,
+			"lastname" : s.nickname,
+			"id": s.id,
+			"date": get_date_submitted(a, s)
+		})
 	
-	# Sort students by last name
-	students.sort(key=lambda student:student["lastname"]);
+	print(assignment)
+	return assignment
 	
-	fulltitle = assignment["name"]
-	return render_template("submissions.html", title=fulltitle, students=students, assignment=assignment,percent=percent)
+################## Utility Functions ##################
 
-@app.route('/submit-assignment')
-@login_required
-def submit_assignment():
-	assignment = {
-		"name":"Journal Entry Week 4",
-		"description": "Write down your thoughts and feelings about the Little Red Riding Hood. Also, explain why it was unwise for Red to wander alone in the forest.",
-		"dueDate":"2014-04-25"
-	}
-	return render_template("submit-assignment.html", title = assignment["name"],assignment=assignment)
+def get_date_submitted(a, u):
+	# Get the date submitted for a particular assignment and user
+	s = a.submissions.filter(Submission.user == u).first()
+	if s is not None:
+		return str(s.time)
+	else:
+		return ""
+		
+def get_percentage(a):
+	return str(safe_division(a.submissions.count(), len(a.course.students)) * 100) + "%"
+
+def safe_division(dividend, divisor):
+	if divisor == 0:
+		return 1
+	return dividend / divisor
