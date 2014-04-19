@@ -1,39 +1,70 @@
 {% extends "master-instructor.html" %}
 {% block head %}{% endblock %}
 {% block content %}
-<!-- Due Date -->
-Due: 3/25
-<br/>
-93% Submitted
-<br/>
-Some kind of useful/descriptive text...
-<br/>
+
+<!-- Assignment Instructions -->
+<span id="instr_label_compact">Show Instructions</span>
+<div id="instructions_compact">{{assignment.description}}</div>
+
+<!-- Due date -->
+<span id="due_label">Due:</span>
+<div id="due">{{assignment.dueDate}}</div><br/>
+
+<!-- Percent Of Students That Have Submitted the Assignment -->
+<hr class="minPad">
+<div id="percent_sub" class="m_auto warning">{{assignment.percent}} Submitted</div>
+<hr class="minPad">
+
 
 <!-- Table of Students -->
-<table class="table table-striped table-hover ">
+<table class="table table-condensed">
   <thead>
-    <tr>
-      <th>Student</th>
-      <th>Submitted</th>
-      <th>Submission</th>
-    </tr>
+      <tr>
+          <th>Student</th>
+          <th class="center">Submit Date</th>
+          <th class="center">Link</th>
+      </tr>
   </thead>
   <tbody>
-    <tr>
-      <td class="success">John Brown</td>
-      <td>3/24 4:45 pm</td>
-      <td><button type="button" class="btn btn-default">View</button></td>
-    </tr>
-    <tr class="success">
-      <td>Alice Ellison</td>
-      <td>3/23 3:16 pm</td>
-      <td><button type="button" class="btn btn-default">View</button></td>
-    </tr>
-    <tr class="danger">
-      <td>Dan Green</td>
-      <td></td>
-      <td></td>
-    </tr>
+    {% for student in assignment.students %}
+      <!-- Highlight rows based on submission percentage -->
+      <tr {% if(student.date != ""): %} class="success"
+          {% endif %} >
+        <td>{{student.lastname}}, {{student.firstname}}</td>
+        <td class="center">{% if(student.date != ""): %} {{student.date}}
+            {% else %} ---
+            {% endif %}
+        </td>
+        <td class="center">
+          {% if(student.date != ""): %}
+          <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submissions('{{assignment.name}}','{{student.lastname}}, {{student.firstname}}')">View</button></td>
+          {% else: %}
+            ---
+          {% endif %}
+      </tr>
+    {% endfor %}
   </tbody>
 </table>
+
+{% endblock %}
+{% block script %}
+  <script>
+    // Toggle visibility of the assignment instructions
+    $("#instr_label_compact").click(function(){
+      $("#instructions_compact").slideToggle(150);
+      if($("#instr_label_compact").text() == "Show Instructions") {
+        $("#instr_label_compact").text("Hide Instructions");
+      }
+      else {
+        $("#instr_label_compact").text("Show Instructions");
+      }
+    });
+    
+    // View submission
+    function view_submissions(assignment,student_name) {
+      // Display the button as normal again
+      $('.btn-view').blur(); 
+      window.alert("Request to view submission of '" + assignment + "' by " + student_name);
+    }
+  </script>
 {% endblock %}
