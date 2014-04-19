@@ -12,7 +12,11 @@
 
 <!-- Percent Of Students That Have Submitted the Assignment -->
 <hr class="minPad">
+<<<<<<< HEAD
 <div id="percent_sub" class="m_auto warning">{{assignment.percent}} Submitted</div>
+=======
+<div id="percent_sub" class="m_auto warning">{{percent}}% Submitted</div>
+>>>>>>> a5e74dcb53b15c782afa6cdd7515e6e1628c7afd
 <hr class="minPad">
 
 
@@ -26,7 +30,11 @@
       </tr>
   </thead>
   <tbody>
+<<<<<<< HEAD
     {% for student in assignment.students %}
+=======
+    {% for student in students %}
+>>>>>>> a5e74dcb53b15c782afa6cdd7515e6e1628c7afd
       <!-- Highlight rows based on submission percentage -->
       <tr {% if(student.date != ""): %} class="success"
           {% endif %} >
