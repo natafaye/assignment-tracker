@@ -49,14 +49,14 @@
     margin-bottom:15px;
 }
 /* New Class, New Assignment Success Modal */
-#new_class_success, #new_assign_success {
+#new_class_success, #new_assign_success, #new_submit_success {
     font-size:24px;
 }
 
-#newClassName, #newAssignmentName {
+#newClassName, #newAssignmentName, #submitAssignmentName {
     font-size:32px;
     color:#3C9A5F;
-    margin-bottom:30px;
+    margin-bottom:0px;
     width:100%;
     padding:10px;
     padding-top:20px;
@@ -64,7 +64,7 @@
     font-weight:bold;
     text-align:center;
 }
-#newClassCodeHolder, #newAssignmentHolder {
+#newClassCodeHolder {
     text-align:center;
     width:100%;
     padding:10px;
@@ -77,21 +77,84 @@
 #newClassCode {
     font-weight:bold;
 }
-#newAssignmentHolder {
+#newAssignmentHolder, #submissionHolder {
     text-align:left;
     width:100%;
     padding:10px;
     padding-bottom:20px;
+    margin-left:15px;
     display:inline-block;
     font-weight:bold;
 }
-#newAssignDueDate {
+#newAssignDueDate, #submissionDate {
     margin-left:10px;
     font-weight:normal;
 }
-#newAssignInstr {
+#submission_content, #newAssignInstr {
+    display:block;
+    font-size:14px;
+    margin-left:20px;
+    margin-right:15px;
+    margin-bottom:10px;
     font-style:italic;
     font-weight:normal;
+}
+#submissionHolder {
+    display:block;
+}
+#submission_title {
+    font-size:36px;
+    width:100%;
+    padding-top:5px;
+    display:block;
+    font-weight:bold;
+    text-align:center;
+}
+#submission_author {
+    font-size:28px;
+    width:100%;
+    display:block;
+    text-align:center;
+}
+#view_submission_content {
+    display:block;
+    font-size:16px;
+    width:75%;
+    margin:auto;
+    padding-right:10px;
+    padding-bottom:15px;
+    padding-top:5px;
+    padding-left:5%;
+    font-style:italic;
+}
+#submission_label {
+    display:block;
+    font-weight:bold;
+    font-size:24px;
+    width:75%;
+    padding-left:10px;
+    margin:auto;
+}
+#submission_divide {
+    width:85%;
+    margin:auto;
+    margin-top:15px;
+    margin-bottom:10px;
+}
+#course_name {
+    font-size:32px;
+    width:100%;
+    padding:10px;
+    padding-top:20px;
+    padding-bottom:15px;
+    display:block;
+    font-weight:bold;
+    text-align:center;
+}
+.student_table {
+    width:85%;
+    margin:auto;
+    margin-bottom:30px;
 }
 
 
@@ -149,6 +212,7 @@
     display:block;
     margin-top:-20px;
     margin-bottom:20px;
+    margin-left:2px;
     font-weight:bold;
     font-size: 14px;
     cursor:pointer;

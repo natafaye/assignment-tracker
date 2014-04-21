@@ -26,7 +26,7 @@
         <td class="center">{{assignment.percentSubmitted}}%</td>
         <td class="center">
           {% if(assignment.percentSubmitted > 0): %}
-          <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submissions('{{assignment.name}}')">View</button></td>
+          <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submissions('{{assignment.id}}')">View</button></td>
           {% else: %}
             ---
           {% endif %}
@@ -37,10 +37,8 @@
 {% endblock %}
 {% block script %}
   <script>
-    function view_submissions(assign_name) {
-      window.alert("Request to view submissions for: " + assign_name);
-      // Display the button as normal again
-      $('.btn-view').blur(); 
+    function view_submissions(assign_id) {
+      window.location.href="/submissions/" + assign_id;
     }
     function new_assignment() {
       window.location.href = "/create-assignment";

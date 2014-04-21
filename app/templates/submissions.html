@@ -8,15 +8,11 @@
 
 <!-- Due date -->
 <span id="due_label">Due:</span>
-<div id="due">{{assignment.dueDate}}</div><br/>
+<div id="due">{{assignment.dueDate.strftime(dateFMT)}}</div><br/>
 
 <!-- Percent Of Students That Have Submitted the Assignment -->
 <hr class="minPad">
-<<<<<<< HEAD
-<div id="percent_sub" class="m_auto warning">{{assignment.percent}} Submitted</div>
-=======
-<div id="percent_sub" class="m_auto warning">{{percent}}% Submitted</div>
->>>>>>> a5e74dcb53b15c782afa6cdd7515e6e1628c7afd
+<div id="percent_sub" class="m_auto warning">{{assignment.percent}}% Submitted</div>
 <hr class="minPad">
 
 
@@ -30,22 +26,18 @@
       </tr>
   </thead>
   <tbody>
-<<<<<<< HEAD
     {% for student in assignment.students %}
-=======
-    {% for student in students %}
->>>>>>> a5e74dcb53b15c782afa6cdd7515e6e1628c7afd
       <!-- Highlight rows based on submission percentage -->
       <tr {% if(student.date != ""): %} class="success"
           {% endif %} >
-        <td>{{student.lastname}}, {{student.firstname}}</td>
+        <td><!-- {{student.lastname}}, {{student.firstname}} --> {{student.firstname}}</td>
         <td class="center">{% if(student.date != ""): %} {{student.date}}
             {% else %} ---
             {% endif %}
         </td>
         <td class="center">
           {% if(student.date != ""): %}
-          <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submissions('{{assignment.name}}','{{student.lastname}}, {{student.firstname}}')">View</button></td>
+          <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submission('{{assignment.id}}','{{student.id}}')">View</button></td>
           {% else: %}
             ---
           {% endif %}
@@ -54,7 +46,19 @@
   </tbody>
 </table>
 
+<!-- Submissions modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" id="view_submission" aria-labelledby="viewSubmission" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <span id="submission_title"></span>
+      <span id="submission_author"></span><hr id="submission_divide"/>
+      <span id="submission_label">Submission:</span>
+      <span id="view_submission_content"></span>
+    </div>
+  </div>
+</div>
 {% endblock %}
+
 {% block script %}
   <script>
     // Toggle visibility of the assignment instructions
@@ -69,10 +73,37 @@
     });
     
     // View submission
-    function view_submissions(assignment,student_name) {
+    function view_submission(assignmentID,studentID) {
       // Display the button as normal again
-      $('.btn-view').blur(); 
-      window.alert("Request to view submission of '" + assignment + "' by " + student_name);
+      $('.btn-view').blur();
+      
+      // Request submission from database
+      $.post('/view-submission-post', {
+            assignment_id: assignmentID,
+            student_id: studentID
+        }).done(function(response) {
+        
+            // Populate Submission Information
+            $("#submission_title").html(response['assignment_name']);
+            $("#submission_author").html(response['student_name']);
+            $("#view_submission_content").html(response['submission_content']);
+            
+            // Show user details on success
+            $("#view_submission").modal();
+            
+            return true;
+        }).fail(function() {
+            // Populate details on failure
+            $("#submission_title").html("An error occurred... unable to display submission!");
+            $("#submission_title").css("color","#EA2F10");
+            $("#submission_author").html("");
+            $("#view_submission_content").html("");
+      
+            // Show user details on failure
+            $("#view_submission").modal();
+            
+            return false;
+        });
     }
   </script>
 {% endblock %}

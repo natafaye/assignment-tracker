@@ -34,7 +34,7 @@
       <span id="newAssignmentName">
       </span>
       <span id="newAssignmentHolder">
-        Instructions: <span id="newAssignInstr"></span><br/><br/>
+        Instructions: <span id="newAssignInstr"></span>
         Due Date: <span id="newAssignDueDate"></span>
       </span>
     </div>
@@ -105,10 +105,10 @@
         }
         
         // Prepare POST variables
-        code = document.getElementById("class").value;
-        assign_name = document.getElementById("assign_name").value;
-        instructions = document.getElementById("assign_instr").value;
-        date = document.getElementById("datepicker").value;        
+        var code = document.getElementById("class").value;
+        var assign_name = document.getElementById("assign_name").value;
+        var instructions = document.getElementById("assign_instr").value;
+        var date = document.getElementById("datepicker").value;        
         
         $.post('/create-assignment-post', {
             class_code: code,

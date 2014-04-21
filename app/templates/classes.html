@@ -14,17 +14,45 @@
       </tr>
   </thead>
   <tbody>
-    {% for course in courseList%}
+    {% for course in courseList %}
       <tr>
           <td>{{course.name}}</td>
           <td class="center">{{course.code}}</td>
           <td class="center">{{course.numStudents}}</td>
-          <td class="center"><button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_students({{course.code}})">View</button></td>
+          <td class="center"><button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_students('{{course.code}}');">View</button></td>
       </tr>
     {% endfor %}
     </tbody>
-
 </table>
+
+{% for course in courseList %}
+<!-- Student List modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" id="modal_{{course.code}}" aria-labelledby="viewSubmission" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <span id="course_name">{{course.name}}</span>
+        
+        <!-- Table of Students -->
+        <table class="table table-striped table-condensed student_table">
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th class="center">Email</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for student in course.students %}
+              <tr>
+                  <td>{{student.nickname}}</td>
+                  <td class="center">{{student.email}}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}
 
 {% block script %}
@@ -34,7 +62,8 @@
       window.location.href = "/create-class";
     }
     function view_students(code) {
-      window.alert("Request to see students for class code: " + code);
+      $("#modal_" + code).modal();
+      
       // Display the button as normal again
       $('.btn-view').blur(); 
     }

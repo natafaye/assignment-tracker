@@ -2,10 +2,10 @@
 {% block head %}{% endblock %}
 {% block content %}
 <div id="form_holder">
-    <form name="info" onsubmit="return submit_assignment();">
+    <form name="info" method="post" action="">
         <!-- Due date -->
         <span id="due_label">Due: </span>
-        <div id="due">{{assignment.dueDate}}</div><br/>
+        <div id="due">{{assignment.due_date.strftime(dateFMT)}}</div><br/>
         
         <!-- Assignment Instructions -->
         <span id="instruction_label">Instructions:</span>
@@ -15,8 +15,22 @@
         <textarea rows="10" cols="50" id="response" class="grayed">Type response here...</textarea>
         
         <!-- Submit Button -->    
-        <button type="submit" class="btn btn-success">Submit</button>
+        <button type="button" class="btn btn-success" onclick="submit_assignment();">Submit</button>
     </form>
+</div>
+
+<!-- Success/Fail modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="new_submit_success" aria-labelledby="newSubmitSuccess" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <span id="submitAssignmentName">
+      </span>
+      <span id="submissionHolder">
+        Content: <span id="submission_content"></span>
+        Date Submitted: <span id="submissionDate"></span>
+      </span>
+    </div>
+  </div>
 </div>
 {% endblock %}
 {% block script %}
@@ -39,6 +53,16 @@
                 $("#response").addClass("grayed");
             }
         });
+        
+        // Redirect ENTER key to the proper function
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                if(!$("#response").is(":focus")) { // Allow return lines in response
+                    submit_assignment();
+                    e.preventDefault();
+                }
+            }
+        });
 
         // Validate response
         function submit_assignment() {
@@ -48,8 +72,42 @@
                 return false;
             }
             
-            window.alert("Submitting response:\n" + text);
+            // Prepare POST variables
+            var assign_name = $(".pageTitle").first().html().trim();
+            //window.alert(assign_name);
+            $.post('/submit-assignment-post', {
+                content:text,
+                assignment_name:assign_name
+            }).done(function(response) {
+                // Populate Submission information
+                $("#submitAssignmentName").html(response['assignment_name'] + " has been submitted!");
+                $("#submission_content").html(response['content']);
+                $("#submissionDate").html(response['time']);
+                
+                // Show user details on success
+                $("#new_submit_success").modal();
+                
+                // Clear the form
+                document.getElementById("response").value = "";
+                return true;
+            }).fail(function() {
+                // Populate details on failure
+                $("#submitAssignmentName").html("An error occurred... unable to submit assignment!");
+                $("#submissionHolder").html("");
+                $("#submitAssignmentName").css("color","#EA2F10");
+                
+                // Show user details on failure
+                $("#new_submit_success").modal();
+                
+                return false;
+            });
+            
             return true;
         }
+        
+        // Return student to home page after submission of assignment
+        $('#new_submit_success').on('hidden.bs.modal', function () {
+            window.location.href = "/home-student";
+        });
     </script>
 {% endblock %}

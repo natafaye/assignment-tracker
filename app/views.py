@@ -82,11 +82,13 @@ def submissions(assignment_id):
 		return redirect(url_for('index'))
 	
 	assignment = get_assignment(assignment_id)
-	print(assignment)
+	#print(assignment)
+	
 	# Sort students by last name
 	assignment["students"].sort(key=lambda student:student["lastname"]);
 	
-	return render_template("submissions.html", title = assignment["name"], user=g.user, assignment=assignment)
+	return render_template("submissions.html", title = assignment["name"], user=g.user,
+			       assignment=assignment,dateFMT=dateFMT)
 
 @app.route('/create-assignment')
 @login_required
@@ -147,6 +149,47 @@ def add_assignment_to_db():
 		'instr':instructions,
 		'due': returnDate})
 
+@app.route('/view-submission-post', methods = ['POST'])
+@login_required
+def view_submission():
+	# Retrieve form data
+	studentID = request.form['student_id']
+	assignmentID = request.form['assignment_id']
+	
+	# Get the associated Assignment and User
+	theAssignment = Assignment.query.get(assignmentID)
+	theStudent = User.query.get(studentID)
+	
+	# Get the Submission
+	theSubmission = Submission.query.filter_by(assignment=theAssignment,user=theStudent).first()
+	
+	# Respond with the desired information
+	return jsonify({
+		'assignment_name':theAssignment.title,
+		'student_name':theStudent.nickname,
+		'submission_content':theSubmission.content })
+
+@app.route('/submit-assignment-post', methods = ['POST'])
+@login_required
+def add_submission_to_db():
+	# Retrieve form data
+	
+	contentIn = request.form['content']
+	assignment_name = request.form['assignment_name']
+	
+	# Get timestamp and Format Date
+	timeIn = datetime.datetime.now()
+	returnDate = timeIn.strftime(dateFMT)
+
+	# Add to database
+	add_submission_for_assignment(assignment_name,timeIn,contentIn)
+	
+	# Send response
+	return jsonify({
+		'time':returnDate,
+		'content':contentIn,
+		'assignment_name':assignment_name })
+
 
 ####################### Student Pages #######################
 
@@ -165,14 +208,14 @@ def home_student():
 def submit_assignment(assignment_id):
 	if not g.user.role == ROLE_STUDENT:
 		return redirect(url_for('index'))
-		
-	assignment = {
-		"name":"Journal Entry Week 4",
-		"description": "Write down your thoughts and feelings about the Little Red Riding Hood. Also, explain why it was unwise for Red to wander alone in the forest.",
-		"dueDate":"2014-04-25"
-	}
-	
-	return render_template("submit-assignment.html", title = assignment["name"], user=g.user, assignment=assignment)
+	a = Assignment.query.get(assignment_id)
+	if a is None:
+		return redirect(url_for('index'))
+	# Only allow student to submit assignments for his/her own class
+	if (a.course != g.user.course):
+		return redirect(url_for('index'))
+
+	return render_template("submit-assignment.html", title = a.title, user=g.user, assignment=a,dateFMT=dateFMT)
 
 
 ######################## Login ########################
@@ -225,12 +268,11 @@ def logout():
 	return redirect(url_for('index'))
 
 ################## Database Functions #################
-		
+	
 def add_course_for_instructor(name,course_code):
 	# Create the new course
 	newCourse = Course(title=name,code=course_code)
 	db.session.add(newCourse)
-	db.session.commit()
 	
 	# Add the course the instructor's list of courses
 	g.user.courses.append(newCourse)
@@ -250,6 +292,25 @@ def add_assignment_for_course(name,course_code,descr,dueDate):
 	db.session.commit()
 	return
 	
+def delete_assignment(assignment_name):
+	delAssign = Assignment.query.filter_by(title=assignment_name).first()
+	db.session.delete(delAssign)
+	db.session.commit()
+	return
+
+def add_submission_for_assignment(assignment_name,timeIn,contentIn):
+	theAssignment = Assignment.query.filter_by(title=assignment_name,course=g.user.course).first()
+	
+	# Create the submission
+	newSubmission = Submission(time=timeIn,user=g.user,assignment=theAssignment,content=contentIn)
+	db.session.add(newSubmission)
+	db.session.commit()
+	
+	# Add the submission the assignment's list of submissions
+	theAssignment.submissions.append(newSubmission)
+	db.session.commit()
+	return
+
 def get_courses_for_instructor():
 	# Check permissions
 	if not g.user.is_authenticated():
@@ -259,8 +320,10 @@ def get_courses_for_instructor():
 	for c in g.user.courses:
 		courses.append({
 				"name":c.title,
+				"id":c.id,
 				"code":c.code,
-				"numStudents":len(c.students)
+				"numStudents":len(c.students),
+				"students":c.students
 			})
 			
 	return courses
@@ -277,6 +340,7 @@ def get_course_for_student():
 	for a in g.user.course.assignments:
 		course['assignments'].append({
 			"name": a.title,
+			"id": a.id,
 			"dueDate": a.due_date,
 			"submitted": get_date_submitted(a, g.user)
 		})
@@ -293,6 +357,7 @@ def get_assignments_for_instructor():
 		for a in c.assignments:
 			assignments.append({
 				'name':a.title,
+				'id':a.id,
 				'dueDate':a.due_date,
 				'class':c.title,
 				'percentSubmitted': get_percentage(a)
@@ -324,6 +389,7 @@ def get_assignment(assignment_id):
 		
 	assignment = {
 		"name": a.title,
+		"id": a.id,
 		"description": a.description,
 		"dueDate": a.due_date,
 		"students": [],
@@ -346,7 +412,7 @@ def get_date_submitted(a, u):
 	# Get the date submitted for a particular assignment and user
 	s = a.submissions.filter(Submission.user == u).first()
 	if s is not None:
-		return str(s.time)
+		return s.time.strftime(dateFMT)
 	else:
 		return ""
 		
@@ -356,7 +422,7 @@ def get_percentage(a):
 def safe_division(dividend, divisor):
 	if divisor == 0:
 		return 0
-	return dividend / divisor
+	return float(dividend) / divisor
 
 def generate_course_code():
 	size = 7
