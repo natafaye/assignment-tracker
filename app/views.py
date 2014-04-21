@@ -45,10 +45,17 @@ def current_assignments():
 		return redirect(url_for('index'))
 		
 	assignments = get_assignments_for_instructor()
-	# Sort assignments by due date
-	assignments.sort(key=lambda assignment:assignment["dueDate"]);
 	
-	return render_template("current-assignments.html", title = "Current Assignments", user=g.user,assignments=assignments,dateFMT=dateFMT)
+	# Filter assignments: List only those with due dates today or in future
+	todayStr = datetime.datetime.now().strftime("%Y-%m-%d") # Get day, NOT time of day
+	today = datetime.datetime.strptime(todayStr,"%Y-%m-%d")
+
+	curAssignments = [a for a in assignments if a["dueDate"] >= today]
+	
+	# Sort assignments by due date
+	curAssignments.sort(key=lambda assignment:assignment["dueDate"]);
+	
+	return render_template("current-assignments.html", title = "Current Assignments", user=g.user,assignments=curAssignments,dateFMT=dateFMT)
 	
 @app.route('/past-assignments')
 @login_required
@@ -58,10 +65,17 @@ def past_assignments():
 		return redirect(url_for('index'))
 		
 	assignments = get_assignments_for_instructor()
-	# Sort assignments by due date
-	assignments.sort(key=lambda assignment:assignment["dueDate"]);
 	
-	return render_template("past-assignments.html", title = "Past Assignments", user=g.user, assignments=assignments,dateFMT=dateFMT)
+		# Filter assignments: List only those with due dates today or in future
+	todayStr = datetime.datetime.now().strftime("%Y-%m-%d") # Get day, NOT time of day
+	today = datetime.datetime.strptime(todayStr,"%Y-%m-%d")
+
+	pastAssignments = [a for a in assignments if a["dueDate"] < today]
+	
+	# Sort assignments by due date
+	pastAssignments.sort(key=lambda assignment:assignment["dueDate"]);
+	
+	return render_template("past-assignments.html", title = "Past Assignments", user=g.user, assignments=pastAssignments,dateFMT=dateFMT)
 	
 @app.route('/classes')
 @login_required

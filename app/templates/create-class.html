@@ -67,5 +67,10 @@
         });
       }
     }
+    
+    // Return student to home page after submission of assignment
+    $('#new_class_success').on('hidden.bs.modal', function () {
+        window.location.href = "/current-assignments";
+    });
   </script>
 {% endblock %}

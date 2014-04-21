@@ -144,5 +144,10 @@
         return true;
     }
     
+    // Return student to home page after submission of assignment
+    $('#new_assign_success').on('hidden.bs.modal', function () {
+        window.location.href = "/current-assignments";
+    });
+    
   </script>
 {% endblock %}
