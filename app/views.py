@@ -215,6 +215,9 @@ def home_student():
 		
 	course = get_course_for_student()
 	
+	# Sort assignments by due date
+	course['assignments'].sort(key=lambda assignment:assignment["dueDate"])
+	
 	return render_template("home-student.html", title = course["name"], user=g.user, course=course,dateFMT=dateFMT)
 
 @app.route('/submit-assignment/<assignment_id>')
