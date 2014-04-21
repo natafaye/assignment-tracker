@@ -2,7 +2,7 @@
 {% block head %}{% endblock %}
 {% block content %}
 <div id="form_holder">
-    <form name="info" onsubmit="return create_assignment();">
+    <form name="info" method="post" action="">
         <!-- Class Selection Dropdown -->
         <select class="form-control" id="class">
             <option default>Select a class...</option>
@@ -20,15 +20,49 @@
 
         <!-- Instructions -->
         <span class="form_label">Instructions:</span>
-        <textarea id="assign_instr" rows="5" cols="39"></textarea>
+        <textarea id="assign_instr" rows="5" cols="39" class="grayed">Type instructions for completing assignment here...</textarea>
 
         <!-- Create Button -->    
-        <button type="submit" class="btn btn-success">Create</button>                
+        <button type="button" class="btn btn-success" onclick="create_assignment();">Create</button>                
     </form>
+</div>
+
+<!-- Success/Fail modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="new_assign_success" aria-labelledby="newAssignSuccess" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <span id="newAssignmentName">
+      </span>
+      <span id="newAssignmentHolder">
+        Instructions: <span id="newAssignInstr"></span><br/><br/>
+        Due Date: <span id="newAssignDueDate"></span>
+      </span>
+    </div>
+  </div>
 </div>
 {% endblock %}
 {% block script %}
   <script>
+    // Toggle instructional text in instructions textarea
+        $("#assign_instr").focus(function(){
+            var curText = document.getElementById("assign_instr").value;
+            if( curText == "Type instructions for completing assignment here...")
+            {
+                document.getElementById("assign_instr").value = "";
+                $("#assign_instr").removeClass("grayed");
+            }
+        });
+        // Toggle instructional text in instructions textarea
+        $("#assign_instr").blur(function(){
+            var curText = document.getElementById("assign_instr").value;
+            if( curText == "")
+            {
+                document.getElementById("assign_instr").value = "Type instructions for completing assignment here...";
+                $("#assign_instr").addClass("grayed");
+            }
+        });
+    
+    
     // Set minimum Due date as current date
     var d = new Date();
     var month = d.getMonth()+1;
@@ -40,6 +74,14 @@
         month = "0" + month;
     }
     document.getElementById("datepicker").min = d.getFullYear() + "-" + month + "-" + day;
+    
+    // Redirect ENTER key to the proper function
+    $(document).keypress(function(e) {
+        if(e.which == 13) {
+          create_assignment();
+          e.preventDefault();
+        }
+    });
     
     // Create assignment based on form data
     function create_assignment() {
@@ -56,15 +98,51 @@
             window.alert("Please select a due date.");
             return false;
         }
-        if (document.getElementById("assign_instr").value == "") {
+        if (document.getElementById("assign_instr").value == "Type instructions for completing assignment here..."
+            || document.getElementById("assign_instr").value == "") {
             window.alert("Please enter a description for this assignment.");
             return false;
         }
-        window.alert("Creating new assignment...\nClass code: " + document.getElementById("class").value +
-                     "\nAssignment Name: " + document.getElementById("assign_name").value +
-                     "\nDue Date: " + document.getElementById("datepicker").value +
-                     "\nDescription: " + document.getElementById("assign_instr").value);
+        
+        // Prepare POST variables
+        code = document.getElementById("class").value;
+        assign_name = document.getElementById("assign_name").value;
+        instructions = document.getElementById("assign_instr").value;
+        date = document.getElementById("datepicker").value;        
+        
+        $.post('/create-assignment-post', {
+            class_code: code,
+            name: assign_name,
+            dueDate: date,
+            instr: instructions
+        }).done(function(response) {
+            // Populate Assignment information
+            $("#newAssignmentName").html("'" + response['name'] + "' successfully created for " + $("#class").find(":selected").text());
+            $("#newAssignInstr").html(response['instr']);
+            $("#newAssignDueDate").html(response['due']);
+            
+            // Show user details on success
+            $("#new_assign_success").modal();
+            
+            // Clear the form
+            document.getElementById("class").value = "Select a class...";
+            document.getElementById("assign_name").value="";
+            document.getElementById("datepicker").value="";
+            document.getElementById("assign_instr").value="";
+            return true;
+        }).fail(function() {
+            // Populate details on failure
+            $("#newAssignmentName").html("An error occurred... unable to create assignment!");
+            $("#newAssignmentHolder").html("");
+            $("#newAssignmentName").css("color","#EA2F10");
+            
+            // Show user details on failure
+            $("#new_assign_success").modal();
+            
+            return false;
+        });
         return true;
     }
+    
   </script>
 {% endblock %}

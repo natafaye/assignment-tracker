@@ -48,6 +48,53 @@
 #class_name, #class {
     margin-bottom:15px;
 }
+/* New Class, New Assignment Success Modal */
+#new_class_success, #new_assign_success {
+    font-size:24px;
+}
+
+#newClassName, #newAssignmentName {
+    font-size:32px;
+    color:#3C9A5F;
+    margin-bottom:30px;
+    width:100%;
+    padding:10px;
+    padding-top:20px;
+    display:inline-block;
+    font-weight:bold;
+    text-align:center;
+}
+#newClassCodeHolder, #newAssignmentHolder {
+    text-align:center;
+    width:100%;
+    padding:10px;
+    padding-bottom:20px;
+    display:inline-block;
+}
+#newClassCodeHolder {
+    font-size:28px;
+}
+#newClassCode {
+    font-weight:bold;
+}
+#newAssignmentHolder {
+    text-align:left;
+    width:100%;
+    padding:10px;
+    padding-bottom:20px;
+    display:inline-block;
+    font-weight:bold;
+}
+#newAssignDueDate {
+    margin-left:10px;
+    font-weight:normal;
+}
+#newAssignInstr {
+    font-style:italic;
+    font-weight:normal;
+}
+
+
 /* Forms */
 #form_holder {
     width:300px;

@@ -2,18 +2,37 @@
 {% block head %}{% endblock %}
 {% block content %}
 <div id="form_holder">
-    <form name="info" onsubmit="return create_class();">
+    <form name="info" method="post" action="">
         <!-- New Class Name -->
         <!-- <span id="class_label">Name:</span> -->
         <input type="text" class="form-control" id="class_name" placeholder="Class Name"><br/>
      
         <!-- Create Button -->    
-        <button type="submit" class="btn btn-success">Create</button>                
+        <button type="button" class="btn btn-success" onclick="create_class()">Create</button>                
     </form>
+</div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="new_class_success" aria-labelledby="newClassSuccess" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <span id="newClassName">
+      </span>
+      <span id="newClassCodeHolder">
+        Code: <span id="newClassCode"></span>
+      </span>
+    </div>
+  </div>
 </div>
 {% endblock %}
 {% block script %}
   <script>
+    // Redirect ENTER key to the proper function
+    $(document).keypress(function(e) {
+        if(e.which == 13) {
+          create_class();
+          e.preventDefault();
+        }
+    });
     function create_class() {
       // Validate class name? Confirmation window?
       var className = document.getElementById("class_name").value;
@@ -22,8 +41,30 @@
         return false;
       }
       else {
-        window.alert("Creating new class: '" + document.getElementById("class_name").value + "'");
-        return true;
+        $.post('/create-class-post', {
+            name: className
+        }).done(function(response) {
+            $("#newClassName").html("'" + response['name'] + "' created successfully!");
+            $("#newClassCode").html(response['code']);
+            
+            // Show user details on success
+            $("#new_class_success").modal();
+            
+            // Clear the form
+            document.getElementById("class_name").value = "";
+            
+            return true;
+        }).fail(function() {
+            // Populate details on failure
+            $("#newClassName").html("An error occurred... unable to create class!");        
+            $("#newClassCodeHolder").html("");
+            $("#newClassName").css("color","#EA2F10");
+            
+            // Show user details on failure
+            $("#new_class_success").modal();
+            
+            return false;
+        });
       }
     }
   </script>

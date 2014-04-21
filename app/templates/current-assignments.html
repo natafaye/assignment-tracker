@@ -21,9 +21,9 @@
       <tr {% if(assignment.percentSubmitted == 100): %} class="success"
           {% endif %} >
         <td>{{assignment.class}}</td>
-        <td>{{assignment.name}}</td>
-        <td class="center">{{assignment.dueDate}}</td>
-        <td class="center">{{assignment.percentSubmitted}}</td>
+        <td class="center">{{assignment.name}}</td>
+        <td class="center">{{assignment.dueDate.strftime(dateFMT)}}</td>
+        <td class="center">{{assignment.percentSubmitted}}%</td>
         <td class="center">
           {% if(assignment.percentSubmitted > 0): %}
           <button type="button" class="btn btn-primary btn-view btn-xs" onclick="view_submissions('{{assignment.name}}')">View</button></td>

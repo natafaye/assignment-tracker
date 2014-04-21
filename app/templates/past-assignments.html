@@ -23,8 +23,8 @@
           {% else: %} class="success"
           {% endif %} >
         <td>{{assignment.class}}</td>
-          <td>{{assignment.name}}</td>
-          <td class="center">{{assignment.dueDate}}</td>
+          <td class="center">{{assignment.name}}</td>
+          <td class="center">{{assignment.dueDate.strftime(dateFMT)}}</td>
           <td class="center">{{assignment.percentSubmitted}}</td>
           <td class="center">
           {% if(assignment.percentSubmitted > 0): %}
