@@ -35,6 +35,18 @@
 }
 
 /*************************************
+ *              Footers
+ *************************************/
+.inline {
+    display:inline-block;
+}
+.github {
+    font-size: 12px;
+    margin-left: 15px;
+}
+
+
+/*************************************
  *        Instructor Pages
  *************************************/
 /* Format view buttons */
